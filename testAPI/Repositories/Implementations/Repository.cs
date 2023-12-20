@@ -1,43 +1,25 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
-using testAPI.DAL;
-using testAPI.Entities;
-using testAPI.Repositories.Interfaces;
+﻿
 
 namespace testAPI.Repositories.Implementations
 {
-    public class Repository : IRepository
+    public class Repository<T> : IRepository<T> where T : BaseEntity
     {
         private AppDbContext _dbcontext;
-
+        private DbSet<T> _table;
         public Repository(AppDbContext dbcontext)
         {
             _dbcontext = dbcontext;
+            _table = _dbcontext.Set<T>();
         }
 
-        public async Task Create(Category category)
-        {
-            await _dbcontext.categories.AddAsync(category); 
-        }
+     
 
-        public void Delete(Category category)
+       public  async Task<IQueryable<T>> GetAll(Expression<Func<T, bool>>? expression = null,
+             Expression<Func<T, object>>? OrderByExpression = null,
+            bool isDescending = false
+           , params string[] includes)
         {
-            _dbcontext.categories.Remove(category);
-        }
-
-        public async Task SaveChangesAsync()
-        {
-           await  _dbcontext.SaveChangesAsync();
-        }
-
-        public void Update(Category category)
-        {
-            _dbcontext.categories.Update(category);
-        }
-
-        async Task<IQueryable<Category>> IRepository.GetAll(Expression<Func<Category, bool>>? expression = null ,params string[] includes)
-        {
-            IQueryable<Category> query = _dbcontext.categories;
+            IQueryable<T> query = _table;
            if(includes is not null) 
             {
                 for(int i = 0; i<includes.Length; i++)
@@ -45,7 +27,10 @@ namespace testAPI.Repositories.Implementations
                     query = query.Include(includes[i]);
                 }
             }
-
+           if (OrderByExpression != null)
+            {
+                query = isDescending ? query.OrderByDescending(OrderByExpression) : query.OrderBy(OrderByExpression);
+            }
            if(expression is not null)
             {
                 query = query.Where(expression);
@@ -54,9 +39,28 @@ namespace testAPI.Repositories.Implementations
             return query;
         }
 
-        async Task<Category> IRepository.GetByIdAsync(int id)
+       public  async Task<T> GetByIdAsync(int id)
         {
-            return await _dbcontext.categories.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+            return await _table.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+        }
+        public async Task Create(T entity)
+        {
+            await _table.AddAsync(entity);
+        }
+
+        public void Delete(T entity)
+        {
+            _table.Remove(entity);
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await _dbcontext.SaveChangesAsync();
+        }
+
+        public void Update(T entity)
+        {
+            _table.Update(entity);
         }
     }
 }

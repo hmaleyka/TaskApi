@@ -1,13 +1,18 @@
 using Microsoft.EntityFrameworkCore;
+using testAPI;
 using testAPI.DAL;
 using testAPI.Repositories.Implementations;
 using testAPI.Repositories.Interfaces;
+using testAPI.Services.Implementations;
+using testAPI.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddScoped<IRepository, Repository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddAutoMapper(typeof(MapperProfile).Assembly);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

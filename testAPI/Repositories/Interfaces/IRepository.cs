@@ -3,14 +3,15 @@ using testAPI.Entities;
 
 namespace testAPI.Repositories.Interfaces
 {
-    public interface IRepository
+    public interface IRepository <T> where T : BaseEntity
     {
-        Task<IQueryable<Category>> GetAll(Expression<Func<Category, bool>>? expression = null, params string[] includes);
-        Task<Category> GetByIdAsync(int id);
+        Task<IQueryable<T>> GetAll(Expression<Func<T, bool>>? expression = null, Expression<Func<T, object>>? OrderByExpression = null,
+            bool isDescending = false, params string[] includes);
+        Task<T> GetByIdAsync(int id);
 
-        Task Create (Category category);
-        void Update (Category category);
-        void Delete (Category category);
+        Task Create (T entity);
+        void Update (T entity);
+        void Delete (T entity);
         Task SaveChangesAsync();
       
     }
