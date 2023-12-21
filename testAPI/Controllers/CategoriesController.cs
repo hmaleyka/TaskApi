@@ -59,8 +59,8 @@ namespace testAPI.Controllers
         [HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
-           //await  _service.GetById(id);
-             _service.Delete(id);
+           
+            await  _service.Delete(id);
 
             return StatusCode(StatusCodes.Status200OK);
         }

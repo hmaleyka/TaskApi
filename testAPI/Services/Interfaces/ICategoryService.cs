@@ -10,6 +10,6 @@ namespace testAPI.Services.Interfaces
 
         Task<Category> Update(int id, UpdateCategoryDto updateCategoryDto);
 
-        void Delete (int id);
+        Task<Category> Delete (int id);
     }
 }

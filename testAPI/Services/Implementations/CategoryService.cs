@@ -64,11 +64,12 @@ namespace testAPI.Services.Implementations
             return existcategory;
         }
 
-        public async void Delete(int id)
+        public async Task<Category> Delete(int id)
         {
             var oldcategory = await _repository.GetByIdAsync(id);
             _repository.Delete(oldcategory);
-            await _repository.SaveChangesAsync();       
+            await _repository.SaveChangesAsync();
+            return oldcategory;
         }
     }
 }
